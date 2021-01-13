@@ -12,5 +12,5 @@ out vec3 normals;
 void main(){
     fragPos = vec3(model * vec4(in_vertex,1.0f)); //
     gl_Position = mvp * vec4(in_vertex,1.0f);
-    normals = in_normals;//transpose(inverse(mat3(model))) * in_normals;
+    normals = transpose(inverse(mat3(model))) * in_normals;
 }

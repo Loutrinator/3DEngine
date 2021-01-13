@@ -7,20 +7,35 @@
 #include "Shader.h"
 #include "Object.h"
 #include "Dragon.h"
-#include <glad/glad.h>
-#include <glm/glm.hpp>
 #include <glm/gtx/transform.hpp>
 #include <glm/gtx/euler_angles.hpp>
+
+Engine::Engine(int width, int height, bool debug) {
+	glfwInit();
+	initWindow(width, height,debug);
+
+	std::cout << "Driver: " << glGetString(GL_VERSION) << "\n";
+	std::cout<< "GPU: " << glGetString(GL_RENDERER) << "\n";
+
+	if(debug){
+		activateDebugMode();
+	}
+
+	mainCamera.setPosition(glm::vec3(-10,3,0));
+}
 
 void Engine::framebuffer_size_callback(GLFWwindow *window, int width, int height) {
 	glViewport(0, 0, width, height);
 }
 
-int Engine::initWindow(const int width, const int height) {
+int Engine::initWindow(int width, int height, bool debug) {
 
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	if(debug){
+		glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE);
+	}
 
 	window = glfwCreateWindow(width, height, "ProjetPhong", nullptr, nullptr);
 	if (window == nullptr) {
@@ -43,15 +58,6 @@ int Engine::initWindow(const int width, const int height) {
 	return 1;
 }
 
-Engine::Engine(int width, int height, bool debug) {
-	glfwInit();
-	initWindow(width, height);
-	if(debug){
-		activateDebugMode();
-	}
-	mainCamera.setPosition(glm::vec3(-10,0,0));
-}
-
 void Engine::messageCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message, const void *userParam)
 {
 	switch (severity)
@@ -71,12 +77,9 @@ void Engine::messageCallback(GLenum source, GLenum type, GLuint id, GLenum sever
 }
 
 void Engine::activateDebugMode(){
-	glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE);
 	glEnable(GL_DEBUG_OUTPUT);
 	glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
 	glDebugMessageCallback(messageCallback,nullptr);
-	std::cout << "Driver: " << glGetString(GL_VERSION) << "\n";
-	std::cout<< "GPU: " << glGetString(GL_RENDERER) << "\n";
 }
 
 void Engine::processInput() {
@@ -86,9 +89,9 @@ void Engine::processInput() {
 
 void Engine::run() {
 	std::cout << "run" << "\n";
-
-	mainCamera.update();
-	Shader myShader("phongLighting");
+//?
+	Shader redMaterial("phongLighting");
+	Shader blueMaterial("phongLighting");
 
 	//Object dragon(DragonVertices,DragonIndices);
 
@@ -97,50 +100,85 @@ void Engine::run() {
 	dragon.setVertices(DragonVertices, sizeof(DragonVertices) / sizeof(float));
 	dragon.setIndices(DragonIndices, sizeof(DragonIndices) / sizeof(uint16_t));
 
+	float planeVertices[] = {
+			1.0f,  0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f, // top right
+			1.0f, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f,  // bottom right
+			-1.0f, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f,  // bottom left
+			-1.0f,  0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,   // top left
+	};
+	uint16_t planeIndices[] = {  // note that we start from 0!
+			0, 1, 3,   // first triangle
+			1, 2, 3    // second triangle
+	};
+	Mesh plane;
+	plane.setVertices(planeVertices,sizeof(planeVertices) / sizeof(float));
+	plane.setIndices(planeIndices,sizeof(planeIndices) / sizeof(uint16_t));
+
 	while (!glfwWindowShouldClose(window)) {
+		mainCamera.update();
+		//std::cout << "update" << "\n";
 		//events
 		glfwPollEvents();// check les evenements qui ont eu lieu depuis le dernier appel de cette fonction
 		//inputs
-		processInput();
+		//processInput();
 
 		//rendering
 
 		glClearColor(0.4f, 0.4f, 0.4f, 0.4f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		myShader.bind();
 		glm::vec3 dragonPosition = glm::vec3(0, -5, 0); //position de l'objet en world space
 
-		glm::vec3 lightPos(10.0f, 10.0f, 10.0f);
-		glm::vec3 lightColor(0.0f, 1.0f, 1.0f);
-		glm::vec3 objectColor(0.5f, 0.5f, 0.5f);
+		glm::vec3 lightPos(-10.0f, 10.0f, 10.0f);
+		glm::vec3 lightColor(1.0f, 1.0f, 1.0f);
+		glm::vec3 dragonColor(0.5f, 0.0f, 0.0f);
 
 		//                on construit le translate         on ajoute une rotation                          et un scale
-		glm::mat4 model = glm::translate(dragonPosition) * glm::eulerAngleXYZ(0.0f, (float)glfwGetTime() * 0.75f, 0.0f) * glm::scale(glm::vec3(1.0f));
+		glm::mat4 dragonModel = glm::translate(dragonPosition) * glm::eulerAngleXYZ(0.0f, 0.0f, 0.0f) * glm::scale(glm::vec3(1.0f));
 
 
-		glm::mat4 mvp = mainCamera.getProjection() * mainCamera.getView() * model;
+		glm::mat4 dragonMvp = mainCamera.getProjection() * mainCamera.getView() * dragonModel;
 
-		float ambientStrength = 0.4f;
-		glm::vec3 ambientColor(1.0f,0.4f,1.0f);
-		glm::vec3 specularColor(1.0f,0.0f,0.7f);
+		float ambientStrength = 0.1f;
+		glm::vec3 ambientColor(0.4f,0.4f,1.0f);
 
-		myShader.setMat4("mvp",mvp);
-		myShader.setMat4("model",model);
-		myShader.setVec3("objectColor",objectColor);
-		myShader.setVec3("camPos",mainCamera.getPosition());
-		myShader.setVec3("lightPos",lightPos);
-		myShader.setVec3("lightColor",lightColor);
-		myShader.setFloat("ambientStrength",ambientStrength);
-		myShader.setVec3("ambientColor",ambientColor);
-		myShader.setFloat("specularStrength",2.0f);
-		//myShader.setVec3("specularColor",specularColor);
-
+		redMaterial.bind();
+		redMaterial.setMat4("mvp",dragonMvp);
+		redMaterial.setMat4("model",dragonModel);
+		redMaterial.setVec3("objectColor",dragonColor);
+		redMaterial.setVec3("camPos",mainCamera.getPosition());
+		redMaterial.setVec3("lightPos",lightPos);
+		redMaterial.setVec3("lightColor",lightColor);
+		redMaterial.setFloat("ambientStrength",ambientStrength);
+		redMaterial.setVec3("ambientColor",ambientColor);
+		redMaterial.setFloat("specularStrength",1.0f);
 
 		dragon.bind();
 		glDrawElements(GL_TRIANGLES, sizeof(DragonIndices) / sizeof(uint16_t), GL_UNSIGNED_SHORT, nullptr);
 		dragon.unbind();
-		//dragon.draw();
+
+		glm::vec3 groundPosition = glm::vec3(0, -5, 0); //position de l'objet en world space
+
+		glm::mat4 groundModel = glm::translate(groundPosition) * glm::eulerAngleXYZ(0.0f, 0.0f, 0.0f) * glm::scale(glm::vec3(10.0f));
+
+		glm::mat4 groundMvp = mainCamera.getProjection() * mainCamera.getView() * groundModel;
+
+		glm::vec3 groundColor(0.7f, 0.7f, 1.0f);
+
+		blueMaterial.bind();
+		blueMaterial.setMat4("mvp",groundMvp);
+		blueMaterial.setMat4("model",groundModel);
+		blueMaterial.setVec3("objectColor",groundColor);
+		blueMaterial.setVec3("camPos",mainCamera.getPosition());
+		blueMaterial.setVec3("lightPos",lightPos);
+		blueMaterial.setVec3("lightColor",lightColor);
+		blueMaterial.setFloat("ambientStrength",ambientStrength);
+		blueMaterial.setVec3("ambientColor",ambientColor);
+		blueMaterial.setFloat("specularStrength",4.0f);
+
+		plane.bind();
+		glDrawElements(GL_TRIANGLES, sizeof(planeIndices) / sizeof(uint16_t), GL_UNSIGNED_SHORT, nullptr);
+		plane.unbind();
 
 		//swap
 		glfwSwapBuffers(window); //échange les deux buffers (back buffer = tu fais ton rendu, front buffer = ton image affichée)

@@ -22,7 +22,7 @@ void main()
 
     vec3 lightDir = normalize(lightPos - fragPos);
     float diff = max(dot(normals, lightDir), 0.0);
-    vec3 diffuse = diff * lightColor;
+    vec3 diffuse = diff * objectColor;
 
     //SPECULAR
     vec3 viewDir = normalize(camPos - fragPos);
@@ -30,8 +30,8 @@ void main()
     float spec = pow(max(dot(viewDir, reflectDir), 0.0), 16);
     vec3 specular = specularStrength * spec * lightColor;
     //RESULT
-    vec3 result = (ambient + diffuse + specular) * objectColor;
-    fragColor = vec4(result, 1.0);
+    vec3 result = (ambient + diffuse + specular);
+fragColor = vec4(result, 1.0);
 
     // ------ old --------
     //float luminance = (1+dot(normalize(lightPos),normals))*0.5f;
