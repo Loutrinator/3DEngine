@@ -4,9 +4,9 @@
 
 //Resize
 int main() {
-	Engine engine(800,600,true);
+	Engine::instance->setup(1000,800,true);
 
-	engine.run();
+	Engine::instance->run();
 
 	return 0;
 }

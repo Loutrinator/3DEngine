@@ -10,7 +10,7 @@
 #include <glm/gtx/transform.hpp>
 #include <glm/gtx/euler_angles.hpp>
 
-Engine::Engine(int width, int height, bool debug) {
+void Engine::setup(int width, int height, bool debug) {
 	glfwInit();
 	initWindow(width, height,debug);
 
@@ -22,6 +22,37 @@ Engine::Engine(int width, int height, bool debug) {
 	}
 
 	mainCamera.setPosition(glm::vec3(-10,3,0));
+	mainCamera.FOV = 90.0f;
+	mainCamera.speed = 0.1f;
+
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
+	glfwSetCursorPosCallback(window, mouse_callback);
+}
+
+void Engine::mouse_callback(GLFWwindow* window, double xpos, double ypos){
+	(std::cout << xpos << ", " << ypos << "\n");
+	if (Engine::instance->firstMouse)
+	{
+		Engine::instance->lastX = xpos;
+		Engine::instance->lastY = ypos;
+		Engine::instance->mainCamera.yaw   = 0;
+		Engine::instance->mainCamera.pitch = 0;
+		Engine::instance->firstMouse = false;
+	}
+
+	//inverser la formule ici pour inverser les axes
+	float xoffset = (float)xpos - (float)Engine::instance->lastX;
+	float yoffset = (float)Engine::instance->lastY - (float)ypos;
+	Engine::instance->lastX = xpos;
+	Engine::instance->lastY = ypos;
+
+	float sensitivity = 0.1f;
+	xoffset *= sensitivity;
+	yoffset *= sensitivity;
+
+	Engine::instance->mainCamera.yaw   += xoffset;
+	Engine::instance->mainCamera.pitch += yoffset;
 }
 
 void Engine::framebuffer_size_callback(GLFWwindow *window, int width, int height) {
@@ -85,10 +116,27 @@ void Engine::activateDebugMode(){
 void Engine::processInput() {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
+
+	const float cameraSpeed = 0.05f; // adjust accordingly
+	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+		mainCamera.moveLeft();
+	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+		mainCamera.moveRight();
+	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+		mainCamera.moveForward();
+	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+		mainCamera.moveBackward();
+	if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
+		mainCamera.moveUp();
+	if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS)
+		mainCamera.moveDown();
 }
 
 void Engine::run() {
 	std::cout << "run" << "\n";
+
+
+
 //?
 	Shader redMaterial("phongLighting");
 	Shader blueMaterial("phongLighting");
@@ -115,12 +163,18 @@ void Engine::run() {
 	plane.setIndices(planeIndices,sizeof(planeIndices) / sizeof(uint16_t));
 
 	while (!glfwWindowShouldClose(window)) {
+
+		float currentFrame = glfwGetTime();
+		deltaTime = currentFrame - lastFrame;
+		lastFrame = currentFrame;
+
+
 		mainCamera.update();
 		//std::cout << "update" << "\n";
 		//events
 		glfwPollEvents();// check les evenements qui ont eu lieu depuis le dernier appel de cette fonction
 		//inputs
-		//processInput();
+		processInput();
 
 		//rendering
 
@@ -130,8 +184,8 @@ void Engine::run() {
 		glm::vec3 dragonPosition = glm::vec3(0, -5, 0); //position de l'objet en world space
 
 		glm::vec3 lightPos(-10.0f, 10.0f, 10.0f);
-		glm::vec3 lightColor(1.0f, 1.0f, 1.0f);
-		glm::vec3 dragonColor(0.5f, 0.0f, 0.0f);
+		glm::vec3 lightColor(1.0f, 0.0f, 1.0f);
+		glm::vec3 dragonColor(0.5f, 1.0f, 0.2f);
 
 		//                on construit le translate         on ajoute une rotation                          et un scale
 		glm::mat4 dragonModel = glm::translate(dragonPosition) * glm::eulerAngleXYZ(0.0f, 0.0f, 0.0f) * glm::scale(glm::vec3(1.0f));
@@ -140,7 +194,7 @@ void Engine::run() {
 		glm::mat4 dragonMvp = mainCamera.getProjection() * mainCamera.getView() * dragonModel;
 
 		float ambientStrength = 0.1f;
-		glm::vec3 ambientColor(0.4f,0.4f,1.0f);
+		glm::vec3 ambientColor(1.0f,0.5f,0.0f);
 
 		redMaterial.bind();
 		redMaterial.setMat4("mvp",dragonMvp);
@@ -185,4 +239,12 @@ void Engine::run() {
 	}
 
 	glfwTerminate();
+}
+
+std::unique_ptr<Engine> Engine::instance = std::make_unique<Engine>();
+
+
+Engine::Engine() {
+	deltaTime = 0.0f;
+	lastFrame = glfwGetTime();
 }
