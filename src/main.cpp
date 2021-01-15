@@ -10,3 +10,13 @@ int main() {
 
 	return 0;
 }
+
+
+/* TODO
+ *
+ * Classe Renderer
+ * Classe Material
+ * Classe Light
+ * Classe Scene
+ *
+ * */

@@ -21,7 +21,7 @@ void Engine::setup(int width, int height, bool debug) {
 		activateDebugMode();
 	}
 
-	mainCamera.setPosition(glm::vec3(-10,3,0));
+	mainCamera.setPosition(glm::vec3(-9.8f, 8.3f, -1.16f));
 	mainCamera.FOV = 90.0f;
 	mainCamera.speed = 0.1f;
 
@@ -136,22 +136,20 @@ void Engine::run() {
 
 	Texture crystalTexture("lightSwirlMarble.jpg");
 
-//?
 	Shader redMaterial("phongLighting");
 	Shader blueMaterial("phongLighting");
 
-	//Object dragon(DragonVertices,DragonIndices);
-
 	//creation objet
-	Mesh dragon;
-	dragon.setVertices(DragonVertices, sizeof(DragonVertices) / sizeof(float));
-	dragon.setIndices(DragonIndices, sizeof(DragonIndices) / sizeof(uint16_t));
+	Mesh dragonMesh;
+	dragonMesh.setVertices(DragonVertices, sizeof(DragonVertices) / sizeof(float));
+	dragonMesh.setIndices(DragonIndices, sizeof(DragonIndices) / sizeof(uint16_t));
+	Object dragon(&dragonMesh, glm::vec3(0.0f, 0.5f, 0.0f), glm::vec3(0.0f, -45.0f, 0.0f), glm::vec3(1.0f));
 
 	float planeVertices[] = {
-			1.0f,  0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f, // top right
-			1.0f, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f,  // bottom right
-			-1.0f, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f,  // bottom left
-			-1.0f,  0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,   // top left
+			1.0f,  0.0f, 1.0f,  0.0f, 1.0f, 0.0f,  1.0f, 1.0f, // top right
+			1.0f,  0.0f, -1.0f, 0.0f, 1.0f, 0.0f,  1.0f, 0.0f,  // bottom right
+			-1.0f, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f,  0.0f, 0.0f,  // bottom left
+			-1.0f, 0.0f, 1.0f,  0.0f, 1.0f, 0.0f,  0.0f, 1.0f,   // top left
 	};
 	uint16_t planeIndices[] = {  // note that we start from 0!
 			0, 1, 3,   // first triangle
@@ -160,33 +158,38 @@ void Engine::run() {
 
 	Mesh planeMesh;
 	planeMesh.setVertices(planeVertices,sizeof(planeVertices) / sizeof(float));
-	int indiceSize = sizeof(planeIndices) / sizeof(uint16_t);
 	planeMesh.setIndices(planeIndices,sizeof(planeIndices) / sizeof(uint16_t));
-	Object plane(&planeMesh,indiceSize);
+
+	Object plane(&planeMesh, glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(10.0f));
 
 	while (!glfwWindowShouldClose(window)) {
 
-		float currentFrame = glfwGetTime();
-		deltaTime = currentFrame - lastFrame;
-		lastFrame = currentFrame;
-
-
-		mainCamera.update();
-		//std::cout << "update" << "\n";
 		//events
 		glfwPollEvents();// check les evenements qui ont eu lieu depuis le dernier appel de cette fonction
 		//inputs
 		processInput();
 
+		mainCamera.update();
+
+		float currentFrame = glfwGetTime();
+		deltaTime = currentFrame - lastFrame;
+		lastFrame = currentFrame;
+
 		//rendering
+
+		const float radius = 20.0f;
+		float lightX = sin(glfwGetTime()) * radius;
+		float lightZ = cos(glfwGetTime()) * radius;
+		glm::vec3 lightPos(lightX, 10.0f, lightZ);
+		glm::vec3 lightColor(1.0f, 1.0f, 1.0f);
+		glm::vec3 lightDiffuse = lightColor * 0.7f;
+		glm::vec3 lightAmbient = lightDiffuse * 0.2f;
+		glm::vec3 lightSpecular(1.0f);
 
 		glClearColor(0.4f, 0.4f, 0.4f, 0.4f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		glm::vec3 dragonPosition = glm::vec3(0, -5, 0); //position de l'objet en world space
-		//                on construit le translate         on ajoute une rotation                          et un scale
-		glm::mat4 dragonModel = glm::translate(dragonPosition) * glm::eulerAngleXYZ(0.0f, 0.0f, 0.0f) * glm::scale(glm::vec3(1.0f));
-
+		glm::mat4 dragonModel = dragon.getTransform().getLocalMatrix();
 		glm::mat4 dragonMvp = mainCamera.getProjection() * mainCamera.getView() * dragonModel;
 
 		redMaterial.bind();
@@ -194,10 +197,10 @@ void Engine::run() {
 		redMaterial.setMat4("model",dragonModel);
 		redMaterial.setVec3("camPos",mainCamera.getPosition());
 
-		glm::vec3 materialDiffuse(1.0f, 1.0f, 1.0f);
+		glm::vec3 materialDiffuse(1.0f, 0.0f, 0.0f);
 		glm::vec3 materialAmbient = materialDiffuse;
 		glm::vec3 materialSpecular(0.5f);
-		float materialShininess = 32;
+		float materialShininess = 256;
 
 		redMaterial.setVec3("material.ambient",materialAmbient);
 		redMaterial.setVec3("material.diffuse",materialDiffuse);
@@ -205,49 +208,37 @@ void Engine::run() {
 		redMaterial.setFloat("material.shininess",materialShininess);
 		glBindTexture(GL_TEXTURE_2D, crystalTexture.getId());
 
-		const float radius = 20.0f;
-		float lightX = sin(glfwGetTime()) * radius;
-		float lightZ = cos(glfwGetTime()) * radius;
-		glm::vec3 lightPos(lightX, 10.0f, lightZ);
-		glm::vec3 lightColor(1.0f, 1.0f, 1.0f);
-		glm::vec3 lightDiffuse = lightColor * 0.5f;
-		glm::vec3 lightAmbient = lightDiffuse * 0.2f;
-		glm::vec3 lightSpecular(1.0f);
 		redMaterial.setVec3("light.position",lightPos);
 		redMaterial.setVec3("light.ambient",lightAmbient);
 		redMaterial.setVec3("light.diffuse",lightDiffuse);
 		redMaterial.setVec3("light.specular",lightSpecular);
 
+		dragon.draw();
 
-		//glBindTexture(GL_TEXTURE_2D, texture);
+		glm::mat4 planeModel = plane.getTransform().getLocalMatrix();
+		glm::mat4 planeMvp = mainCamera.getProjection() * mainCamera.getView() * planeModel;
 
-		//dragon.bind();
-		//glDrawElements(GL_TRIANGLES, sizeof(DragonIndices) / sizeof(uint16_t), GL_UNSIGNED_SHORT, nullptr);
-		//dragon.unbind();
-
-		glm::vec3 groundPosition = glm::vec3(0, -5, 0); //position de l'objet en world space
-
-		glm::mat4 groundModel = glm::translate(groundPosition) * glm::eulerAngleXYZ(0.0f, 0.0f, 0.0f) * glm::scale(glm::vec3(10.0f));
-
-		glm::mat4 groundMvp = mainCamera.getProjection() * mainCamera.getView() * groundModel;
-
-		glm::vec3 groundColor(0.7f, 0.7f, 1.0f);
-		/*
 		blueMaterial.bind();
-		blueMaterial.setMat4("mvp",groundMvp);
-		blueMaterial.setMat4("model",groundModel);
-		blueMaterial.setVec3("objectColor",groundColor);
+		blueMaterial.setMat4("mvp",planeMvp);
+		blueMaterial.setMat4("model",planeModel);
 		blueMaterial.setVec3("camPos",mainCamera.getPosition());
-		blueMaterial.setVec3("lightPos",lightPos);
-		blueMaterial.setVec3("lightColor",lightColor);
-		blueMaterial.setFloat("ambientStrength",ambientStrength);
-		blueMaterial.setVec3("ambientColor",ambientColor);
-		blueMaterial.setFloat("specularStrength",4.0f);
-		*/
+
+		glm::vec3 groundDiffuse(0.2f, 0.1f, 0.1f);
+		glm::vec3 groundAmbient = groundDiffuse;
+		glm::vec3 groundSpecular(0.8f);
+		float groundShininess = 128;
+
+		blueMaterial.setVec3("material.ambient",groundAmbient);
+		blueMaterial.setVec3("material.diffuse",groundDiffuse);
+		blueMaterial.setVec3("material.specular",groundSpecular);
+		blueMaterial.setFloat("material.shininess",groundShininess);
+		glBindTexture(GL_TEXTURE_2D, crystalTexture.getId());
+
+		blueMaterial.setVec3("light.position",lightPos);
+		blueMaterial.setVec3("light.ambient",lightAmbient);
+		blueMaterial.setVec3("light.diffuse",lightDiffuse);
+		blueMaterial.setVec3("light.specular",lightSpecular);
 		plane.draw();
-		//plane.bind();
-		//glDrawElements(GL_TRIANGLES, sizeof(planeIndices) / sizeof(uint16_t), GL_UNSIGNED_SHORT, nullptr);
-		//plane.unbind();
 
 		//swap
 		glfwSwapBuffers(window); //échange les deux buffers (back buffer = tu fais ton rendu, front buffer = ton image affichée)

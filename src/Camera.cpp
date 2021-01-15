@@ -47,7 +47,7 @@ void Camera::update() {
 	GLint viewport[4];
 	glGetIntegerv(GL_VIEWPORT, viewport);
 	float ratio = viewport[2] / (float) viewport[3];
-
+	std::cout << _position.x << " " << _position.y << " " << _position.z << "\n";
 	_projection = glm::perspective(glm::radians(FOV), ratio, 0.01f, 100.0f);
 	//const float radius = 20.0f;
 	//float camX = sin(glfwGetTime()) * radius;

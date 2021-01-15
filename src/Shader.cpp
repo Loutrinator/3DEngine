@@ -32,7 +32,7 @@ Shader::Shader(const std::string &name) {
 
 		std::string error;
 		error.resize(length - 1);
-		glGetProgramInfoLog(_id, length, nullptr, error.data());
+		glGetProgramInfoLog(_id, length, nullptr, (char*)error.data());
 
 		throw std::runtime_error("Error while linking shaders to program: " + error);
 	}
@@ -66,7 +66,7 @@ GLuint Shader::loadShader(const std::string &path, GLenum type) {
 
 		std::string error;
 		error.resize(length - 1);
-		glGetShaderInfoLog(shader, length, nullptr, error.data());
+		glGetShaderInfoLog(shader, length, nullptr, (char*)error.data());
 
 		throw std::runtime_error("Error while compiling shader: " + error);
 	}
