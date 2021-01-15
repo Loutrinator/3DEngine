@@ -4,15 +4,13 @@
 
 #include "Object.h"
 
-Object::Object(const float* vertices,const  uint16_t* indices) {
-	mesh = Mesh();
-	mesh.setVertices(vertices, sizeof(vertices) / sizeof(float));
-	indicesSize = sizeof(indices) / sizeof(uint16_t);
-	mesh.setIndices(indices, indicesSize);
+void Object::draw() {
+	_mesh->bind();
+	glDrawElements(GL_TRIANGLES, _indicesSize, GL_UNSIGNED_SHORT, nullptr);
+	_mesh->unbind();
 }
 
-void Object::draw() {
-	mesh.bind();
-	glDrawElements(GL_TRIANGLES, indicesSize, GL_UNSIGNED_SHORT, nullptr);
-	mesh.unbind();
+Object::Object(Mesh* mesh,int indiceSize):
+	_mesh(mesh), position(0.0f), rotation(0.0f), scale(0.0f), _indicesSize(indiceSize)
+{
 }

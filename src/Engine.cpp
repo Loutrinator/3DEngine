@@ -31,7 +31,6 @@ void Engine::setup(int width, int height, bool debug) {
 }
 
 void Engine::mouse_callback(GLFWwindow* window, double xpos, double ypos){
-	(std::cout << xpos << ", " << ypos << "\n");
 	if (Engine::instance->firstMouse)
 	{
 		Engine::instance->lastX = xpos;
@@ -135,7 +134,7 @@ void Engine::processInput() {
 void Engine::run() {
 	std::cout << "run" << "\n";
 
-
+	Texture crystalTexture("lightSwirlMarble.jpg");
 
 //?
 	Shader redMaterial("phongLighting");
@@ -158,9 +157,12 @@ void Engine::run() {
 			0, 1, 3,   // first triangle
 			1, 2, 3    // second triangle
 	};
-	Mesh plane;
-	plane.setVertices(planeVertices,sizeof(planeVertices) / sizeof(float));
-	plane.setIndices(planeIndices,sizeof(planeIndices) / sizeof(uint16_t));
+
+	Mesh planeMesh;
+	planeMesh.setVertices(planeVertices,sizeof(planeVertices) / sizeof(float));
+	int indiceSize = sizeof(planeIndices) / sizeof(uint16_t);
+	planeMesh.setIndices(planeIndices,sizeof(planeIndices) / sizeof(uint16_t));
+	Object plane(&planeMesh,indiceSize);
 
 	while (!glfwWindowShouldClose(window)) {
 
@@ -192,7 +194,7 @@ void Engine::run() {
 		redMaterial.setMat4("model",dragonModel);
 		redMaterial.setVec3("camPos",mainCamera.getPosition());
 
-		glm::vec3 materialDiffuse(0.7f, 0.0f, 0.0f);
+		glm::vec3 materialDiffuse(1.0f, 1.0f, 1.0f);
 		glm::vec3 materialAmbient = materialDiffuse;
 		glm::vec3 materialSpecular(0.5f);
 		float materialShininess = 32;
@@ -201,12 +203,13 @@ void Engine::run() {
 		redMaterial.setVec3("material.diffuse",materialDiffuse);
 		redMaterial.setVec3("material.specular",materialSpecular);
 		redMaterial.setFloat("material.shininess",materialShininess);
+		glBindTexture(GL_TEXTURE_2D, crystalTexture.getId());
 
 		const float radius = 20.0f;
 		float lightX = sin(glfwGetTime()) * radius;
 		float lightZ = cos(glfwGetTime()) * radius;
 		glm::vec3 lightPos(lightX, 10.0f, lightZ);
-		glm::vec3 lightColor(1.0f, 0.0f, 1.0f);
+		glm::vec3 lightColor(1.0f, 1.0f, 1.0f);
 		glm::vec3 lightDiffuse = lightColor * 0.5f;
 		glm::vec3 lightAmbient = lightDiffuse * 0.2f;
 		glm::vec3 lightSpecular(1.0f);
@@ -218,9 +221,9 @@ void Engine::run() {
 
 		//glBindTexture(GL_TEXTURE_2D, texture);
 
-		dragon.bind();
-		glDrawElements(GL_TRIANGLES, sizeof(DragonIndices) / sizeof(uint16_t), GL_UNSIGNED_SHORT, nullptr);
-		dragon.unbind();
+		//dragon.bind();
+		//glDrawElements(GL_TRIANGLES, sizeof(DragonIndices) / sizeof(uint16_t), GL_UNSIGNED_SHORT, nullptr);
+		//dragon.unbind();
 
 		glm::vec3 groundPosition = glm::vec3(0, -5, 0); //position de l'objet en world space
 
@@ -241,9 +244,10 @@ void Engine::run() {
 		blueMaterial.setVec3("ambientColor",ambientColor);
 		blueMaterial.setFloat("specularStrength",4.0f);
 		*/
-		plane.bind();
-		glDrawElements(GL_TRIANGLES, sizeof(planeIndices) / sizeof(uint16_t), GL_UNSIGNED_SHORT, nullptr);
-		plane.unbind();
+		plane.draw();
+		//plane.bind();
+		//glDrawElements(GL_TRIANGLES, sizeof(planeIndices) / sizeof(uint16_t), GL_UNSIGNED_SHORT, nullptr);
+		//plane.unbind();
 
 		//swap
 		glfwSwapBuffers(window); //échange les deux buffers (back buffer = tu fais ton rendu, front buffer = ton image affichée)

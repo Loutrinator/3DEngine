@@ -13,6 +13,7 @@
 class Mesh {
 public:
 	Mesh();
+	~Mesh();
 	void setVertices(const float* vertices, size_t size);
 	void setIndices(const uint16_t* indices, size_t size);
 	void bind();

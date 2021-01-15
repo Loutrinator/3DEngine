@@ -16,12 +16,12 @@ struct Light {
 
 in vec3 fragPos;
 in vec3 normals;
-
-
+in vec2 uvs;
 
 uniform vec3 camPos;//position de la cam
 uniform Material material;
 uniform Light light;
+uniform sampler2D mainTexture;
 
 out vec4 fragColor;
 
@@ -33,7 +33,7 @@ void main()
     //DIFFUSE
     vec3 lightDir = normalize(light.position - fragPos);
     float diff = max(dot(normals, lightDir), 0.0);
-    vec3 diffuse = diff * material.diffuse * light.diffuse;
+    vec3 diffuse = diff * material.diffuse * light.diffuse * vec3(texture(mainTexture, uvs));
 
     //SPECULAR
     vec3 viewDir = normalize(camPos - fragPos);
@@ -43,4 +43,5 @@ void main()
     //RESULT
     vec3 result = (ambient + diffuse + specular);
     fragColor = vec4(result, 1.0);
+
 }

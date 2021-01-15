@@ -10,12 +10,16 @@
 
 class Object {
 public:
-	Object(const float* vertices, const uint16_t* indices);
+	Object(Mesh* mesh, int indiceSize);
 	void draw();
-	glm::vec3 position;
-	Mesh mesh = Mesh();
-	int indicesSize;
 private:
+	Mesh* _mesh;
+
+	glm::vec3 position;
+	glm::vec3 rotation;
+	glm::vec3 scale;
+
+	int _indicesSize;
 };
 
 

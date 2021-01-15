@@ -8,6 +8,7 @@
 #include <GLFW/glfw3.h>
 #include <memory>
 #include "Camera.h"
+#include "Texture.h"
 
 
 class Engine {
@@ -35,6 +36,7 @@ private:
 	double lastX;
 	double lastY;
 
+	Texture textureLoader;
 };
 
 

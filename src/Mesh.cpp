@@ -17,6 +17,10 @@ Mesh::Mesh() {
 	glEnableVertexAttribArray(1);// on l'active
 	glVertexAttribBinding(1, 0);// on va bind le vbo sur le buffer 0
 
+	glVertexAttribFormat(2, 2, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat));//on défini le format du parametre en position 0
+	glEnableVertexAttribArray(2);// on l'active
+	glVertexAttribBinding(2, 0);// on va bind le vbo sur le buffer 0
+
 	glBindVertexArray(0); //debind du VAO
 }
 
@@ -53,4 +57,10 @@ void Mesh::bind() {
 
 void Mesh::unbind() {
 	glBindVertexArray(0);
+}
+
+Mesh::~Mesh() {
+	glDeleteBuffers(1, &_vbo);
+	glDeleteBuffers(1, &_ibo);
+	glDeleteVertexArrays(1, &_vao);
 }
