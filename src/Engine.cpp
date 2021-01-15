@@ -201,11 +201,32 @@ void Engine::run() {
 		redMaterial.setMat4("model",dragonModel);
 		redMaterial.setVec3("objectColor",dragonColor);
 		redMaterial.setVec3("camPos",mainCamera.getPosition());
-		redMaterial.setVec3("lightPos",lightPos);
-		redMaterial.setVec3("lightColor",lightColor);
-		redMaterial.setFloat("ambientStrength",ambientStrength);
-		redMaterial.setVec3("ambientColor",ambientColor);
-		redMaterial.setFloat("specularStrength",1.0f);
+
+		glm::vec3 materialDiffuse(0.7f, 0.0f, 0.0f);
+		glm::vec3 materialAmbient = materialDiffuse;
+		glm::vec3 materialSpecular(0.5f);
+		float materialShininess = 32;
+
+		redMaterial.setVec3("material.ambient",materialAmbient);
+		redMaterial.setVec3("material.diffuse",materialDiffuse);
+		redMaterial.setVec3("material.specular",materialSpecular);
+		redMaterial.setFloat("material.shininess",materialShininess);
+
+		const float radius = 20.0f;
+		float lightX = sin(glfwGetTime()) * radius;
+		float lightZ = cos(glfwGetTime()) * radius;
+		glm::vec3 lightPos(lightX, 10.0f, lightZ);
+		glm::vec3 lightColor(1.0f, 0.0f, 1.0f);
+		glm::vec3 lightDiffuse = lightColor * 0.5f;
+		glm::vec3 lightAmbient = lightDiffuse * 0.2f;
+		glm::vec3 lightSpecular(1.0f);
+		redMaterial.setVec3("light.position",lightPos);
+		redMaterial.setVec3("light.ambient",lightAmbient);
+		redMaterial.setVec3("light.diffuse",lightDiffuse);
+		redMaterial.setVec3("light.specular",lightSpecular);
+
+
+		glBindTexture(GL_TEXTURE_2D, texture);
 
 		dragon.bind();
 		glDrawElements(GL_TRIANGLES, sizeof(DragonIndices) / sizeof(uint16_t), GL_UNSIGNED_SHORT, nullptr);
@@ -218,7 +239,7 @@ void Engine::run() {
 		glm::mat4 groundMvp = mainCamera.getProjection() * mainCamera.getView() * groundModel;
 
 		glm::vec3 groundColor(0.7f, 0.7f, 1.0f);
-
+		/*
 		blueMaterial.bind();
 		blueMaterial.setMat4("mvp",groundMvp);
 		blueMaterial.setMat4("model",groundModel);
@@ -229,7 +250,7 @@ void Engine::run() {
 		blueMaterial.setFloat("ambientStrength",ambientStrength);
 		blueMaterial.setVec3("ambientColor",ambientColor);
 		blueMaterial.setFloat("specularStrength",4.0f);
-
+		*/
 		plane.bind();
 		glDrawElements(GL_TRIANGLES, sizeof(planeIndices) / sizeof(uint16_t), GL_UNSIGNED_SHORT, nullptr);
 		plane.unbind();
