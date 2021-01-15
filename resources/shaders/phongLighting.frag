@@ -5,7 +5,6 @@ struct Material {
     vec3 diffuse;
     vec3 specular;
     float shininess;
-    sampler2D mainTexture;
 };
 
 struct Light {
@@ -34,7 +33,7 @@ void main()
     //DIFFUSE
     vec3 lightDir = normalize(light.position - fragPos);
     float diff = max(dot(normals, lightDir), 0.0);
-    vec3 diffuse = diff * material.diffuse * light.diffuse *  texture(material.mainTexture, TexCoord);
+    vec3 diffuse = diff * material.diffuse * light.diffuse;
 
     //SPECULAR
     vec3 viewDir = normalize(camPos - fragPos);
