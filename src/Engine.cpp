@@ -182,24 +182,14 @@ void Engine::run() {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		glm::vec3 dragonPosition = glm::vec3(0, -5, 0); //position de l'objet en world space
-
-		glm::vec3 lightPos(-10.0f, 10.0f, 10.0f);
-		glm::vec3 lightColor(1.0f, 0.0f, 1.0f);
-		glm::vec3 dragonColor(0.5f, 1.0f, 0.2f);
-
 		//                on construit le translate         on ajoute une rotation                          et un scale
 		glm::mat4 dragonModel = glm::translate(dragonPosition) * glm::eulerAngleXYZ(0.0f, 0.0f, 0.0f) * glm::scale(glm::vec3(1.0f));
 
-
 		glm::mat4 dragonMvp = mainCamera.getProjection() * mainCamera.getView() * dragonModel;
-
-		float ambientStrength = 0.1f;
-		glm::vec3 ambientColor(1.0f,0.5f,0.0f);
 
 		redMaterial.bind();
 		redMaterial.setMat4("mvp",dragonMvp);
 		redMaterial.setMat4("model",dragonModel);
-		redMaterial.setVec3("objectColor",dragonColor);
 		redMaterial.setVec3("camPos",mainCamera.getPosition());
 
 		glm::vec3 materialDiffuse(0.7f, 0.0f, 0.0f);
@@ -226,7 +216,7 @@ void Engine::run() {
 		redMaterial.setVec3("light.specular",lightSpecular);
 
 
-		glBindTexture(GL_TEXTURE_2D, texture);
+		//glBindTexture(GL_TEXTURE_2D, texture);
 
 		dragon.bind();
 		glDrawElements(GL_TRIANGLES, sizeof(DragonIndices) / sizeof(uint16_t), GL_UNSIGNED_SHORT, nullptr);
