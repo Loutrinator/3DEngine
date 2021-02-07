@@ -183,10 +183,10 @@ void Engine::run() {
 		glm::vec3 lightPos(lightX, 10.0f, lightZ);
 		glm::vec3 lightColor(1.0f, 1.0f, 1.0f);
 		glm::vec3 lightDiffuse = lightColor * 0.7f;
-		glm::vec3 lightAmbient = lightDiffuse * 0.2f;
+		glm::vec3 lightAmbient = lightDiffuse * 0.1f;
 		glm::vec3 lightSpecular(1.0f);
 
-		glClearColor(0.4f, 0.4f, 0.4f, 0.4f);
+		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		glm::mat4 dragonModel = dragon.getTransform().getLocalMatrix();
@@ -223,7 +223,7 @@ void Engine::run() {
 		blueMaterial.setMat4("model",planeModel);
 		blueMaterial.setVec3("camPos",mainCamera.getPosition());
 
-		glm::vec3 groundDiffuse(0.2f, 0.1f, 0.1f);
+		glm::vec3 groundDiffuse(0.0f, 0.3f, 0.3f);
 		glm::vec3 groundAmbient = groundDiffuse;
 		glm::vec3 groundSpecular(0.8f);
 		float groundShininess = 128;

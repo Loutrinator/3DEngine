@@ -11,15 +11,15 @@ Mesh::Mesh() {
 
 	glVertexAttribFormat(0, 3, GL_FLOAT, GL_FALSE, 0);//on défini le format du parametre en _position 0
 	glEnableVertexAttribArray(0);// on l'active
-	glVertexAttribBinding(0, 0);// on va bind le vbo sur le buffer 0
+	glVertexAttribBinding(0, 0);// on va bind les données du vbo sur le buffer 0 à l'indice 0
 
-	glVertexAttribFormat(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat));//on défini le format du parametre en _position 0
+	glVertexAttribFormat(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat));//on défini le format du parametre en _position 1
 	glEnableVertexAttribArray(1);// on l'active
-	glVertexAttribBinding(1, 0);// on va bind le vbo sur le buffer 0
+	glVertexAttribBinding(1, 0);// on va bind les données du vbo sur le buffer 0 à l'indice 1
 
-	glVertexAttribFormat(2, 2, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat));//on défini le format du parametre en _position 0
+	glVertexAttribFormat(2, 2, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat));//on défini le format du parametre en _position 2
 	glEnableVertexAttribArray(2);// on l'active
-	glVertexAttribBinding(2, 0);// on va bind le vbo sur le buffer 0
+	glVertexAttribBinding(2, 0);// on va bind les données du vbo sur le buffer 0 à l'indice 2
 
 	glBindVertexArray(0); //debind du VAO
 }
