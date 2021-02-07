@@ -9,13 +9,17 @@ Mesh::Mesh() {
 	glGenVertexArrays(1, &_vao); //creation du buffer VAO
 	glBindVertexArray(_vao); //ca active le VAO
 
-	glVertexAttribFormat(0, 3, GL_FLOAT, GL_FALSE, 0);//on défini le format du parametre en position 0
+	glVertexAttribFormat(0, 3, GL_FLOAT, GL_FALSE, 0);//on défini le format du parametre en _position 0
 	glEnableVertexAttribArray(0);// on l'active
-	glVertexAttribBinding(0, 0);// on va bind le vbo sur le buffer 0
+	glVertexAttribBinding(0, 0);// on va bind les données du vbo sur le buffer 0 à l'indice 0
 
-	glVertexAttribFormat(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat));//on défini le format du parametre en position 0
+	glVertexAttribFormat(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat));//on défini le format du parametre en _position 1
 	glEnableVertexAttribArray(1);// on l'active
-	glVertexAttribBinding(1, 0);// on va bind le vbo sur le buffer 0
+	glVertexAttribBinding(1, 0);// on va bind les données du vbo sur le buffer 0 à l'indice 1
+
+	glVertexAttribFormat(2, 2, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat));//on défini le format du parametre en _position 2
+	glEnableVertexAttribArray(2);// on l'active
+	glVertexAttribBinding(2, 0);// on va bind les données du vbo sur le buffer 0 à l'indice 2
 
 	glBindVertexArray(0); //debind du VAO
 }
@@ -45,6 +49,7 @@ void Mesh::setIndices(const uint16_t *indices, size_t size) {
 	glBindVertexArray(_vao);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _ibo);
 	glBindVertexArray(0);
+	_indicesSize = size;
 }
 
 void Mesh::bind() {
@@ -53,4 +58,14 @@ void Mesh::bind() {
 
 void Mesh::unbind() {
 	glBindVertexArray(0);
+}
+
+Mesh::~Mesh() {
+	glDeleteBuffers(1, &_vbo);
+	glDeleteBuffers(1, &_ibo);
+	glDeleteVertexArrays(1, &_vao);
+}
+
+int Mesh::getIndiceSize() const {
+	return _indicesSize;
 }

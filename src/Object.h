@@ -7,15 +7,18 @@
 
 #include "Mesh.h"
 #include "Shader.h"
+#include "Transform.h"
 
 class Object {
 public:
-	Object(const float* vertices, const uint16_t* indices);
+	Object(Mesh* mesh, glm::vec3 position, glm::vec3 rotation, glm::vec3 scale);
 	void draw();
-	glm::vec3 position;
-	Mesh mesh = Mesh();
-	int indicesSize;
+	Transform getTransform();
 private:
+	Mesh* _mesh;
+	Transform _transform;
+
+	int _indicesSize;
 };
 
 
