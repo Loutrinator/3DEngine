@@ -145,6 +145,8 @@ void Engine::run() {
 	dragonMesh.setIndices(DragonIndices, sizeof(DragonIndices) / sizeof(uint16_t));
 	Object dragon(&dragonMesh, glm::vec3(0.0f, 0.5f, 0.0f), glm::vec3(0.0f, -45.0f, 0.0f), glm::vec3(1.0f));
 
+	LoadedObj obj = LoaderObj::Load("resources/obj/rock_test.obj");
+
 	float planeVertices[] = {
 			1.0f,  0.0f, 1.0f,  0.0f, 1.0f, 0.0f,  1.0f, 1.0f, // top right
 			1.0f,  0.0f, -1.0f, 0.0f, 1.0f, 0.0f,  1.0f, 0.0f,  // bottom right

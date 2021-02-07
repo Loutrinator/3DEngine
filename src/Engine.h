@@ -9,6 +9,7 @@
 #include <memory>
 #include "Camera.h"
 #include "Texture.h"
+#include "LoaderObj.h"
 
 
 class Engine {
