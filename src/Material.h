@@ -14,6 +14,7 @@ public:
 
     void bind();
     void setShader(Shader* shader);
+    Shader& getShader();
 private:
     glm::vec3 _ambient;
     glm::vec3 _diffuse;

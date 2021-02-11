@@ -5,18 +5,18 @@
 #include <vector>
 #include "Shader.h"
 #include "tiny_obj_loader.h"
-#include "Mesh.h"
-
+#include "Object.h"
+#include "Camera.h"
 
 class LoadedObj {
 public:
-    explicit LoadedObj(const std::string& path){
-        loadModel(path);
+    LoadedObj(const std::string& path, Material& defaultMat){
+        loadModel(path, defaultMat);
     }
-    void draw();
+    void draw(Camera& camera);
 private:
-    void loadModel(const std::string& path);
-    std::vector<Mesh*> _meshes;
+    void loadModel(const std::string& path, Material& defaultMat);
+    std::vector<Object*> _objects;
 };
 
 

@@ -17,3 +17,7 @@ void Material::bind() {
 void Material::setShader(Shader* shader) {
     _shader = shader;
 }
+
+Shader &Material::getShader() {
+    return *_shader;
+}

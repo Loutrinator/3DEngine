@@ -19,11 +19,13 @@ public:
 	void bind();
 	void unbind();
 	int getIndiceSize() const;
+	int getVerticesSize() const;
 private:
 	GLuint _vao;//definir setup avec les attributs du shader (quel buffer etc)
 	GLuint _vbo;//notre buffer qui contient les vertices
 	GLuint _ibo;//notre buffer qui contient les indices du vbo
 	int _indicesSize;
+	int _verticesSize;
 
 };
 

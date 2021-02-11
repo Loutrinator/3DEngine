@@ -14,8 +14,10 @@ class Object {
 public:
 	Object(Mesh& mesh, Material& material, glm::vec3 position, glm::vec3 rotation, glm::vec3 scale);
 	void draw();
+	void drawArray();
 	Transform& getTransform();
 	void setMaterial(Material& material);
+	Material& getMaterial();
 private:
     Mesh& _mesh;
     Material& _material;

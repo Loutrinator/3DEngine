@@ -16,6 +16,14 @@ void Object::draw() {
 	_mesh.unbind();
 }
 
+void Object::drawArray() {
+    _material.bind();
+    _mesh.bind();
+    glDrawArrays(GL_TRIANGLES, 0, _mesh.getVerticesSize());
+    _mesh.unbind();
+}
+
+
 Transform& Object::getTransform() {
 	return _transform;
 }
@@ -23,3 +31,9 @@ Transform& Object::getTransform() {
 void Object::setMaterial(Material &material) {
     _material = material;
 }
+
+Material &Object::getMaterial() {
+    return _material;
+}
+
+

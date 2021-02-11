@@ -202,7 +202,7 @@ void Engine::run() {
     objects.push_back(plane);
 
     // LOAD OBJ
-    LoadedObj obj("resources/obj/cube.obj");
+    LoadedObj obj("resources/obj/sphere.obj", redPlasticMaterial);
 
     GLuint framebuffer;
     glGenFramebuffers(1, &framebuffer);//creation
@@ -265,7 +265,7 @@ void Engine::run() {
             shader.setMat4("model", model);
             object.draw();
 		}
-		obj.draw();
+		obj.draw(mainCamera);
 
         glDisable(GL_DEPTH_TEST);
 
