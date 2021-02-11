@@ -2,12 +2,14 @@
 // Created by Marine on 13/01/2021.
 //
 
+#define TINYOBJLOADER_IMPLEMENTATION
 #include "Engine.h"
 #include <iostream>
 #include "Shader.h"
 #include "Object.h"
 #include "Dragon.h"
 #include "Light.h"
+#include "LoadedObj.h"
 #include <glm/gtx/transform.hpp>
 #include <glm/gtx/euler_angles.hpp>
 #include <vector>
@@ -198,6 +200,9 @@ void Engine::run() {
 	Object plane(planeMesh, bluePlasticMaterial, glm::vec3(0.0f), glm::vec3(glm::radians(90.0f),0.0f,0.0f), glm::vec3(10.0f));
     objects.push_back(plane);
 
+    // LOAD OBJ
+    LoadedObj obj("resources/obj/cube.obj");
+
     GLuint framebuffer;
     glGenFramebuffers(1, &framebuffer);//creation
     glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
@@ -259,6 +264,7 @@ void Engine::run() {
             shader.setMat4("model", model);
             object.draw();
 		}
+		obj.draw();
 
         glDisable(GL_DEPTH_TEST);
 

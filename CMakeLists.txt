@@ -6,7 +6,7 @@ set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O2")
 
 project(ProjetPhong)
 
-add_executable(ProjetPhong vendor/glad/src/glad.c src/main.cpp src/Shader.cpp src/Shader.h src/Helpers/FileHelper.cpp src/Helpers/FileHelper.h src/Mesh.cpp src/Mesh.h src/Dragon.h src/Engine.cpp src/Engine.h src/Object.cpp src/Object.h src/Camera.cpp src/Camera.h src/Texture.cpp src/Texture.h src/stb_image.h src/Transform.cpp src/Transform.h src/Material.cpp src/Material.h src/Light.cpp src/Light.h)
+add_executable(ProjetPhong vendor/glad/src/glad.c src/main.cpp src/Shader.cpp src/Shader.h src/Helpers/FileHelper.cpp src/Helpers/FileHelper.h src/Mesh.cpp src/Mesh.h src/Dragon.h src/Engine.cpp src/Engine.h src/Object.cpp src/Object.h src/Camera.cpp src/Camera.h src/Texture.cpp src/Texture.h src/stb_image.h src/Transform.cpp src/Transform.h src/Material.cpp src/Material.h src/Light.cpp src/Light.h src/LoadedObj.cpp src/LoadedObj.h)
 target_compile_features(ProjetPhong PRIVATE cxx_std_20)
 
 target_include_directories(ProjetPhong PRIVATE
