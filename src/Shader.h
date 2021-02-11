@@ -14,7 +14,7 @@ class Shader {
 public:
 	Shader(const std::string& name);
 	~Shader();
-	void bind();
+	void bind() const;
 	GLuint getId() const;
 	void setBool(const std::string &name, bool value) const;
 	void setInt(const std::string &name, int value) const;

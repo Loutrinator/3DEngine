@@ -8,17 +8,18 @@
 #include "Mesh.h"
 #include "Shader.h"
 #include "Transform.h"
+#include "Material.h"
 
 class Object {
 public:
-	Object(Mesh* mesh, glm::vec3 position, glm::vec3 rotation, glm::vec3 scale);
+	Object(Mesh& mesh, Material& material, glm::vec3 position, glm::vec3 rotation, glm::vec3 scale);
 	void draw();
-	Transform getTransform();
+	Transform& getTransform();
+	void setMaterial(Material& material);
 private:
-	Mesh* _mesh;
+    Mesh& _mesh;
+    Material& _material;
 	Transform _transform;
-
-	int _indicesSize;
 };
 
 

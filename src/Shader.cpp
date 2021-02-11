@@ -73,7 +73,7 @@ GLuint Shader::loadShader(const std::string &path, GLenum type) {
 	return shader;
 }
 
-void Shader::bind() {
+void Shader::bind() const {
 	glUseProgram(_id);
 }
 
@@ -95,7 +95,8 @@ void Shader::setFloat(const std::string &name, float value) const {
 }
 
 void Shader::setVec3(const std::string& name, glm::vec3 value) const {
-	glUniform3fv(glGetUniformLocation(_id, name.c_str()), 1, glm::value_ptr(value));
+    auto toto = glGetUniformLocation(_id, name.c_str());
+	glUniform3fv(toto, 1, glm::value_ptr(value));
 }
 void Shader::setMat4(const std::string& name, glm::mat4 value) const {
 	glUniformMatrix4fv(glGetUniformLocation(_id, name.c_str()), 1, GL_FALSE, glm::value_ptr(value));

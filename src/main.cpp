@@ -14,6 +14,7 @@ int main() {
 
 /* TODO
  * 1) Lire des .obj ou .fbx
+ * 1.5) DSA
  * 2) Classe Renderer : Classe qui parcours tous les objets afin de leurs appliquer leurs matériaux et de les rendre
  * 3) Classe Material : Une classe ou struct qui contient les parametres à passer au shader correspondant
  * 4) Classe Light : comme object, une pos et des parametres d'éclairage
