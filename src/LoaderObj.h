@@ -2,13 +2,7 @@
 #define LOADEROBJ_H
 
 #include <iostream>
-#include "tiny_obj_loader.h"
-
-struct LoadedObj{
-    tinyobj::attrib_t attributes;
-    std::vector<tinyobj::shape_t> meshes;
-    std::vector<tinyobj::material_t> materials;
-};
+#include "LoadedObj.h"
 
 class LoaderObj {
 public:

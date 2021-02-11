@@ -17,8 +17,6 @@ public:
 private:
 	Mesh* _mesh;
 	Transform _transform;
-
-	int _indicesSize;
 };
 
 

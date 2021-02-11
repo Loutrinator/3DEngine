@@ -138,6 +138,7 @@ void Engine::run() {
 
 	Shader redMaterial("phongLighting");
 	Shader blueMaterial("phongLighting");
+	Shader meshMaterial("phongLighting");
 
 	//creation objet
 	Mesh dragonMesh;
@@ -145,7 +146,13 @@ void Engine::run() {
 	dragonMesh.setIndices(DragonIndices, sizeof(DragonIndices) / sizeof(uint16_t));
 	Object dragon(&dragonMesh, glm::vec3(0.0f, 0.5f, 0.0f), glm::vec3(0.0f, -45.0f, 0.0f), glm::vec3(1.0f));
 
-	LoadedObj obj = LoaderObj::Load("resources/obj/rock_test.obj");
+	LoadedObj obj = LoaderObj::Load("resources/obj/sphere.obj");
+	std::vector<Mesh> loadedMeshes = obj.getMeshes();
+	std::vector<Object> loadedObjects;
+	for(Mesh& m : loadedMeshes){
+	    loadedObjects.emplace_back(&m, glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
+	}
+	std::vector<Shader> loadedMaterials = obj.getMaterials();
 
 	float planeVertices[] = {
 			1.0f,  0.0f, 1.0f,  0.0f, 1.0f, 0.0f,  1.0f, 1.0f, // top right
@@ -215,7 +222,7 @@ void Engine::run() {
 		redMaterial.setVec3("light.diffuse",lightDiffuse);
 		redMaterial.setVec3("light.specular",lightSpecular);
 
-		dragon.draw();
+		//dragon.draw();
 
 		glm::mat4 planeModel = plane.getTransform().getLocalMatrix();
 		glm::mat4 planeMvp = mainCamera.getProjection() * mainCamera.getView() * planeModel;
@@ -241,6 +248,29 @@ void Engine::run() {
 		blueMaterial.setVec3("light.diffuse",lightDiffuse);
 		blueMaterial.setVec3("light.specular",lightSpecular);
 		plane.draw();
+
+		glBindTexture(GL_TEXTURE_2D, NULL);
+
+		int objSize = loadedObjects.size();
+		for(int i = 0; i < objSize; i++) {
+		    meshMaterial.bind();
+		    glm::mat4 meshModel = loadedObjects[i].getTransform().getLocalMatrix();
+		    glm::mat4 meshMvp = mainCamera.getProjection() * mainCamera.getView() * meshModel;
+            meshMaterial.setMat4("mvp", meshMvp);
+            meshMaterial.setMat4("model", meshModel);
+            meshMaterial.setVec3("camPos", mainCamera.getPosition());
+            meshMaterial.setVec3("material.ambient", materialAmbient);
+            meshMaterial.setVec3("material.diffuse", materialDiffuse);
+            meshMaterial.setVec3("material.specular", materialSpecular);
+            meshMaterial.setFloat("material.shininess", materialShininess);
+            //glBindTexture(GL_TEXTURE_2D, crystalTexture.getId());
+
+            meshMaterial.setVec3("light.position", lightPos);
+            meshMaterial.setVec3("light.ambient", lightAmbient);
+            meshMaterial.setVec3("light.diffuse", lightDiffuse);
+            meshMaterial.setVec3("light.specular", lightSpecular);
+		    loadedObjects[i].draw();
+		}
 
 		//swap
 		glfwSwapBuffers(window); //échange les deux buffers (back buffer = tu fais ton rendu, front buffer = ton image affichée)
