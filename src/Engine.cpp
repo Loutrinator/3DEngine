@@ -143,6 +143,7 @@ void Engine::run() {
 
     //POST PROCESSING SHADERS
     Shader negativeShader("Post Processing/negative");
+    Shader baseShader("Post Processing/base");
 
 
     //LIGHT
@@ -273,7 +274,7 @@ void Engine::run() {
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
         planeMesh.bind();
 
-        negativeShader.bind();
+        baseShader.bind();
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, colorTexture.getId());
 
