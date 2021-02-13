@@ -35,7 +35,6 @@ void Mesh::setVertices(const float *vertices, size_t size) {
 	glBindVertexArray(_vao);
 	glBindVertexBuffer(0,_vbo,0,8*sizeof(GLfloat));
 	glBindVertexArray(0);
-    _verticesSize = size;
 }
 
 void Mesh::setIndices(const uint16_t *indices, size_t size) {
@@ -68,8 +67,4 @@ Mesh::~Mesh() {
 
 int Mesh::getIndiceSize() const {
 	return _indicesSize;
-}
-
-int Mesh::getVerticesSize() const {
-    return _verticesSize;
 }

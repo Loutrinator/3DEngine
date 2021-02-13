@@ -10,13 +10,13 @@
 
 class LoadedObj {
 public:
-    LoadedObj(const std::string& path, Material& defaultMat){
-        loadModel(path, defaultMat);
-    }
+    LoadedObj(Shader* shader, const std::string& path, const std::string& materialPath = "");
     void draw(Camera& camera);
 private:
-    void loadModel(const std::string& path, Material& defaultMat);
+    void loadModel(Shader* shader, const std::string& path, const std::string& materialPath = "");
+    static glm::vec3 toVec(const float* value);
     std::vector<Object*> _objects;
+    std::vector<Material*> _materials;
 };
 
 

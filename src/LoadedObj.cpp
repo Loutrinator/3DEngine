@@ -1,5 +1,9 @@
 #include "LoadedObj.h"
 
+LoadedObj::LoadedObj(Shader *shader, const std::string &path, const std::string &materialPath) {
+    loadModel(shader, path, materialPath);
+}
+
 void LoadedObj::draw(Camera& camera) {
     for(int i = 0; i < _objects.size(); i++){
         Object* o = _objects[i];
@@ -8,16 +12,16 @@ void LoadedObj::draw(Camera& camera) {
         Shader& shader = o->getMaterial().getShader();
         shader.setMat4("mvp", MVP);
         shader.setMat4("model", model);
-        o->drawArray();
+        o->draw();
     }
 }
 
-void LoadedObj::loadModel(const std::string& path, Material& defaultMat) {
-    tinyobj::attrib_t attrib;
+void LoadedObj::loadModel(Shader* shader, const std::string& path, const std::string& materialPath) {
     std::vector<tinyobj::shape_t> shapes;
     std::vector<tinyobj::material_t> materials;
     std::string error;
-    bool ret = tinyobj::LoadObj(&attrib, &shapes, &materials, &error, path.c_str());
+    const char* materialPathValue = materialPath.empty() ? NULL : materialPath.c_str();
+    bool ret = tinyobj::LoadObj(shapes, materials, error, path.c_str(), materialPathValue);
     if(!error.empty()){
         std::cerr << error;
     }
@@ -25,41 +29,45 @@ void LoadedObj::loadModel(const std::string& path, Material& defaultMat) {
         std::cerr << "Failed to load obj file" << std::endl;
         exit(1);
     }
-    std::vector<float> vertices;
-    std::vector<glm::vec3> normals;
-    std::vector<glm::vec2> texCoordsVec;
-    for(int shapeIndex = 0; shapeIndex < shapes.size(); shapeIndex++){
-        tinyobj::shape_t shape = shapes[shapeIndex];
-        tinyobj::mesh_t& mesh = shape.mesh;
-        vertices.clear();
-        normals.clear();
-        texCoordsVec.clear();
-        for(auto& i : mesh.indices){
-            glm::vec3 position = {
-                    attrib.vertices[i.vertex_index * 3],
-                    attrib.vertices[i.vertex_index * 3 + 1],
-                    attrib.vertices[i.vertex_index * 3 + 2]
-            };
-            glm::vec3 normal = {
-                    attrib.normals[i.normal_index * 3],
-                    attrib.normals[i.normal_index * 3 + 1],
-                    attrib.normals[i.normal_index * 3 + 2]
-            };
-            glm::vec2 texCoords = {
-                    attrib.texcoords[i.texcoord_index * 2],
-                    attrib.texcoords[i.texcoord_index * 2 + 1]
-            };
-            vertices.push_back(position[0]);
-            vertices.push_back(position[1]);
-            vertices.push_back(position[2]);
-            normals.push_back(normal);
-            texCoordsVec.push_back(texCoords);
+    std::vector<Material> resultMaterials;
+    for(auto& shape : shapes){
+        std::vector<float> data;
+        std::vector<uint16_t> indices;
+        int texCoordsIndex = 0;
+        int vertSize = shape.mesh.positions.size();
+        auto positions = shape.mesh.positions;
+        auto normals = shape.mesh.normals;
+        auto texCoords = shape.mesh.texcoords;
+        for(int i = 0; i < vertSize; i += 3){
+            data.push_back(positions[i]);
+            data.push_back(positions[i + 1]);
+            data.push_back(positions[i + 2]);
+            data.push_back(normals[i]);
+            data.push_back(normals[i + 1]);
+            data.push_back(normals[i + 2]);
+            data.push_back(texCoords[texCoordsIndex++]);
+            data.push_back(texCoords[texCoordsIndex++]);
+        }
+        for(unsigned int index : shape.mesh.indices){
+            indices.push_back(index);
         }
         Mesh* m = new Mesh();
-        m->setVertices(vertices.data(), vertices.size());
-        //m->setIndices(indices.data(), indices.size());
-        Object* o = new Object(*m, defaultMat, glm::vec3(0, 1, 0), glm::vec3(0), glm::vec3(1.0f));
+        m->setVertices(data.data(), data.size());
+        m->setIndices(indices.data(), indices.size());
+        tinyobj::material_t currentMat = materials[shape.mesh.material_ids[0]];
+        Material* mat = new Material(shader, toVec(currentMat.ambient), toVec(currentMat.diffuse), toVec(currentMat.specular),
+                     currentMat.shininess);
+        Object* o = new Object(*m, *mat, glm::vec3(0, 1, 0),
+                               glm::vec3(0), glm::vec3(1.0f));
+        _materials.push_back(mat);
         _objects.push_back(o);
     }
 
+}
+glm::vec3 LoadedObj::toVec(const float * value){
+    glm::vec3 result;
+    result[0] = value[0];
+    result[1] = value[1];
+    result[2] = value[2];
+    return result;
 }

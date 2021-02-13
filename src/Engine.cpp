@@ -147,7 +147,7 @@ void Engine::run() {
 
 
     //LIGHT
-    glm::vec3 lightPos(0, 10.0f, 0);
+    glm::vec3 lightPos(5.0f, 10.0f, 0);
     glm::vec3 lightColor(1.0f, 1.0f, 1.0f);
     glm::vec3 lightDiffuse = lightColor * 0.7f;
     glm::vec3 lightAmbient = lightDiffuse * 0.1f;
@@ -181,7 +181,7 @@ void Engine::run() {
 	dragonMesh.setIndices(DragonIndices, sizeof(DragonIndices) / sizeof(uint16_t));
 
 	Object dragon(dragonMesh,redPlasticMaterial, glm::vec3(0.0f, 0.5f, 0.0f), glm::vec3(0.0f, -45.0f, 0.0f), glm::vec3(1.0f));
-    objects.push_back(dragon);
+    //objects.push_back(dragon);
 
 	float planeVertices[] = {
 			1.0f,  1.0f, 0.0f,  0.0f, 1.0f, 0.0f,  1.0f, 1.0f, // top right
@@ -202,7 +202,7 @@ void Engine::run() {
     objects.push_back(plane);
 
     // LOAD OBJ
-    LoadedObj obj("resources/obj/sphere.obj", redPlasticMaterial);
+    LoadedObj obj(&shader, "resources/obj/sphere_smooth.obj", "resources/obj/");
 
     GLuint framebuffer;
     glGenFramebuffers(1, &framebuffer);//creation
@@ -241,8 +241,8 @@ void Engine::run() {
 		//rendering
 
 		const float radius = 20.0f;
-        lightPos.x = sin(glfwGetTime()) * radius;
-        lightPos.z = cos(glfwGetTime()) * radius;
+        //lightPos.x = sin(glfwGetTime()) * radius;
+        //lightPos.z = cos(glfwGetTime()) * radius;
         mainLight.setPosition(lightPos);
 
         glEnable(GL_DEPTH_TEST);
