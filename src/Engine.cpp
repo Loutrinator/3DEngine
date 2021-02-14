@@ -206,7 +206,7 @@ void Engine::run() {
     objects.push_back(plane);
 
     // LOAD OBJ
-    LoadedObj obj(&shader, "resources/obj/sphere_smooth.obj", "resources/obj/");
+    LoadedObj obj(&shader, "resources/obj/suzanne/suzanne.obj", "resources/obj/suzanne/");
 
     GLuint framebuffer;
     glGenFramebuffers(1, &framebuffer);//creation
