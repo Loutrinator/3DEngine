@@ -74,22 +74,52 @@ glm::vec3 Camera::getPosition() {
 }
 
 void Camera::moveLeft() {
-	_position -= speed * _right;
+    if(cameraMode == Free){
+	    _position -= speed * _right;
+    }
 }
 
 void Camera::moveRight() {
-	_position += speed * _right;
+    if(cameraMode == Free) {
+        _position += speed * _right;
+    }
 }
 
 void Camera::moveForward() {
-	_position += speed * _forward;
+    if(cameraMode == Free){
+	    _position += speed * _forward;
+    }
 }
 void Camera::moveBackward() {
-	_position -= speed * _forward;
+    if(cameraMode == Free){
+	    _position -= speed * _forward;
+    }
 }
 void Camera::moveUp() {
-	_position += speed * _up;
+    if(cameraMode == Free){
+	    _position += speed * _up;
+    } else {
+        //float a = orbitalRadius /
+        _position += orbitalSpeed * sin(orbitalRadius * _up);
+    }
 }
 void Camera::moveDown() {
+    if(cameraMode == Free){
 	_position -= speed * _up;
+    } else {
+
+    }
 }
+
+void Camera::switchCameraMode() {
+    if(cameraMode == Free)
+        cameraMode = Orbital;
+    else cameraMode = Free;
+    std::string cameraModeStr = cameraMode == Free ? "Free" : "Orbital";
+    std::cout << "Camera mode : " << cameraModeStr << std::endl;
+}
+
+float Camera::magnitude(glm::vec3 vec) {
+    return sqrt(vec.x*vec.x+vec.y*vec.y+vec.z*vec.z);
+}
+

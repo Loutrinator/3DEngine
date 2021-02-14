@@ -137,6 +137,13 @@ void Engine::processInput() {
 		mainCamera.moveUp();
 	if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS)
 		mainCamera.moveDown();
+	if(glfwGetKey(window, GLFW_KEY_TAB) == GLFW_RELEASE){
+	    tabKeyUp = true;
+	}
+    if(glfwGetKey(window, GLFW_KEY_TAB) == GLFW_PRESS && tabKeyUp){
+        tabKeyUp = false;
+        mainCamera.switchCameraMode();
+    }
 }
 
 void Engine::run() {

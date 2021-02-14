@@ -5,6 +5,11 @@
 #ifndef PROJETPHONG_CAMERA_H
 #define PROJETPHONG_CAMERA_H
 #include <glm/glm.hpp>
+#include <cmath>
+
+enum CameraMode{
+    Free, Orbital
+};
 
 class Camera {
 public:
@@ -23,6 +28,7 @@ public:
 	void moveBackward();
 	void moveUp();
 	void moveDown();
+	void switchCameraMode();
 	float FOV;
 	float speed;
 	float yaw;
@@ -35,6 +41,11 @@ private:
 	glm::vec3 _up;
 	glm::mat4 _view;
 	glm::mat4 _projection;
+	float magnitude(glm::vec3 vec);
+
+	CameraMode cameraMode = Free;
+	float orbitalRadius = 10;
+	float orbitalSpeed = 0.001;
 };
 
 

@@ -37,6 +37,8 @@ private:
 	double lastY;
 
 	Texture textureLoader;
+
+	bool tabKeyUp = true;
 };
 
 
