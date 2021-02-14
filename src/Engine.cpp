@@ -94,14 +94,18 @@ int Engine::initWindow(int width, int height, bool debug) {
 
 void Engine::messageCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message, const void *userParam)
 {
+    std::string messageStr(message);
 	switch (severity)
 	{
 		case GL_DEBUG_SEVERITY_HIGH:
+            if(messageStr == "glUniform3fv has failed to set the uniform at location '2': the uniform's type, component size, or matrix di"
+                             "mensions are incompatible with the function variant (GL_INVALID_OPERATION)")
+                break;
 			std::cout << "ERROR " << id << ": " << message << std::endl;
 			//if (IsDebuggerPresent())
 			//	__debugbreak();
 			break;
-		case GL_DEBUG_SEVERITY_MEDIUM:
+	    case GL_DEBUG_SEVERITY_MEDIUM:
 			std::cout << "WARNING " << id << ": " << message << std::endl;
 			break;
 		case GL_DEBUG_SEVERITY_LOW:
@@ -241,8 +245,8 @@ void Engine::run() {
 		//rendering
 
 		const float radius = 20.0f;
-        //lightPos.x = sin(glfwGetTime()) * radius;
-        //lightPos.z = cos(glfwGetTime()) * radius;
+        lightPos.x = sin(glfwGetTime()) * radius;
+        lightPos.z = cos(glfwGetTime()) * radius;
         mainLight.setPosition(lightPos);
 
         glEnable(GL_DEPTH_TEST);

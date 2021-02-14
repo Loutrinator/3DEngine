@@ -12,6 +12,11 @@ void LoadedObj::draw(Camera& camera) {
         Shader& shader = o->getMaterial().getShader();
         shader.setMat4("mvp", MVP);
         shader.setMat4("model", model);
+
+        if(_textures[i] == nullptr)
+            glBindTexture(GL_TEXTURE_2D, 0);
+        else glBindTexture(GL_TEXTURE_2D, _textures[i]->getId());
+
         o->draw();
     }
 }
@@ -59,6 +64,10 @@ void LoadedObj::loadModel(Shader* shader, const std::string& path, const std::st
                      currentMat.shininess);
         Object* o = new Object(*m, *mat, glm::vec3(0, 1, 0),
                                glm::vec3(0), glm::vec3(1.0f));
+        if(!currentMat.diffuse_texname.empty()){
+            Texture* texture = new Texture(currentMat.diffuse_texname);
+            _textures.push_back(texture);
+        } else _textures.push_back(nullptr);
         _materials.push_back(mat);
         _objects.push_back(o);
     }

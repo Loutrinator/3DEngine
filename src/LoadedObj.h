@@ -7,6 +7,7 @@
 #include "tiny_obj_loader.h"
 #include "Object.h"
 #include "Camera.h"
+#include "Texture.h"
 
 class LoadedObj {
 public:
@@ -17,6 +18,7 @@ private:
     static glm::vec3 toVec(const float* value);
     std::vector<Object*> _objects;
     std::vector<Material*> _materials;
+    std::vector<Texture*> _textures;
 };
 
 
